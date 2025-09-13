@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Agent Pro - PreLOT Making</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        .num-input{ width: 7rem; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="agent-profile">
+                    <div class="avatar">
+                        <img src="https://avatar.vercel.sh/Post%20Agent.png" alt="Post Agent" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="avatar-fallback" style="display: none;">PA</div>
+                    </div>
+                    <div class="agent-info">
+                        <span class="agent-name">Post Agent</span>
+                        <span class="agent-number">PA-12345</span>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="index.html" class="nav-link"><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a href="customers.html" class="nav-link"><span>Customers</span></a></li>
+                    <li class="nav-item"><a href="new-collection.html" class="nav-link"><span>New Collection</span></a></li>
+                    <li class="nav-item"><a href="collections.html" class="nav-link"><span>All Collections</span></a></li>
+                    <li class="nav-item"><a href="deposits.html" class="nav-link"><span>Deposits</span></a></li>
+                    <li class="nav-item"><a href="lot-making.html" class="nav-link"><span>Lot Making</span></a></li>
+                    <li class="nav-item active"><a href="pre-lot-making.html" class="nav-link"><span>PreLOT Making</span></a></li>
+                    <li class="nav-item"><a href="reports.html" class="nav-link"><span>Reports</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="settings.html" class="nav-link"><span>Settings</span></a></li>
+                </ul>
+                <div class="copyright"><p>&copy; 2025 Post Agent Pro</p></div>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 class="page-title">PreLOT Making</h1>
+                <div class="header-actions">
+                    <button class="btn btn-outline btn-icon" onclick="logout()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16,17 21,12 16,7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span class="sr-only">Logout</span>
+                    </button>
+                </div>
+            </header>
+            <div class="content">
+                <div class="card" style="margin-bottom: 1.5rem;">
+                    <div class="card-header"><h3 class="card-title">Build Lot (Max <span id="preMaxLot"></span>)</h3></div>
+                    <div class="card-content">
+                        <form id="preLotForm" onsubmit="handlePreAdd(event)">
+                            <div class="form-group">
+                                <label class="form-label" for="preCustomerSearch">Customer</label>
+                                <input id="preCustomerSearch" class="form-input" placeholder="Search by name, SC or A/C" />
+                                <select id="preCustomer" class="form-input" size="6" style="margin-top:0.5rem;"></select>
+                            </div>
+                            <div class="form-row" style="display:flex; gap:1rem; flex-wrap: wrap;">
+                                <div>
+                                    <label class="form-label" for="preInstallment">Installment</label>
+                                    <input class="form-input num-input" type="number" id="preInstallment" min="0" step="0.01" value="0" required />
+                                </div>
+                                <div>
+                                    <label class="form-label" for="preMonths">Months</label>
+                                    <input class="form-input num-input" type="number" id="preMonths" min="1" value="1" required />
+                                </div>
+                                <div>
+                                    <label class="form-label" for="prePenalty">Penalty</label>
+                                    <input class="form-input num-input" type="number" id="prePenalty" min="0" step="0.01" value="0" />
+                                </div>
+                            </div>
+                            <div style="display:flex; gap: 1rem; justify-content:flex-end; margin-top:0.75rem;">
+                                <button type="button" class="btn btn-outline" onclick="resetPreLot()">Reset</button>
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3 class="card-title">PreLOT Preview</h3></div>
+                    <div class="card-content">
+                        <div style="display:flex; gap:0.75rem; margin-bottom:0.75rem; align-items:center;">
+                            <input id="preSearch" class="form-input" placeholder="Search customer" style="max-width:300px;">
+                            <div id="preLotTotal" style="font-weight:600;"></div>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Installment</th>
+                                        <th>Months</th>
+                                        <th>Penalty</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="preLotBody">
+                                    <tr><td colspan="6" style="text-align:center; padding:1rem; color:hsl(var(--muted-foreground));">Add customers to pre lot.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; gap:1rem; margin-top:1rem; align-items:center; flex-wrap: wrap;">
+                            <div style="display:flex; gap:1rem;">
+                                <button class="btn btn-outline" onclick="preExportCSV()">Export CSV</button>
+                                <button class="btn btn-outline" onclick="preViewLot()">View</button>
+                                <button class="btn btn-primary" onclick="prePrintLot()">Print</button>
+                            </div>
+                            <div style="display:flex; gap:1rem;">
+                                <button class="btn btn-outline" onclick="preExportAccounts()">Export Account Numbers</button>
+                                <button class="btn btn-outline" onclick="preViewAccounts()">View Account Numbers</button>
+                                <button class="btn btn-primary" onclick="prePrintAccounts()">Print Account Numbers</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let preLotRows = [];
+        let preMax = 20000;
+        function seedPreCustomer(){
+            const sel = document.getElementById('preCustomer');
+            const search = document.getElementById('preCustomerSearch');
+            const all = (app.customers||[]).slice().sort((a,b)=> (parseInt(a.shortCode||'0',10)||0) - (parseInt(b.shortCode||'0',10)||0));
+            const render = () => {
+                const term = (search.value||'').toLowerCase();
+                const filtered = !term ? all : all.filter(c =>
+                    (c.name||'').toLowerCase().includes(term) ||
+                    String(c.shortCode||'').toLowerCase().includes(term) ||
+                    String(c.accountNumber||'').toLowerCase().includes(term)
+                );
+                sel.innerHTML = filtered.map(c=>`<option value="${c.id}">${c.name} (Acc: ${c.accountNumber||'-'} · SC: ${c.shortCode||'-'})</option>`).join('');
+            };
+            render();
+            search.addEventListener('input', render);
+            // Double click add
+            sel.addEventListener('dblclick', ()=> handlePreAdd(new Event('submit')));
+            sel.addEventListener('change', ()=>{ /* keep selection for Add */ });
+            search.addEventListener('keydown', (e)=>{ if (e.key==='Enter'){ e.preventDefault(); if (sel.options.length>0){ sel.selectedIndex = 0; handlePreAdd(new Event('submit')); } }});
+        }
+        function resetPreLot(){ preLotRows = []; renderPreLot(); }
+        function handlePreAdd(e){
+            e.preventDefault();
+            const id = document.getElementById('preCustomer').value;
+            if (!id){ showToast('Select customer','warning'); return; }
+            const c = (app.customers||[]).find(x=>x.id===id);
+            if (!c){ showToast('Customer not found','error'); return; }
+            const inst = parseFloat(document.getElementById('preInstallment').value||'0')||0;
+            const months = parseInt(document.getElementById('preMonths').value||'1',10)||1;
+            const penalty = parseFloat(document.getElementById('prePenalty').value||'0')||0;
+            const total = inst*months + penalty;
+            // enforce cap
+            const baseSoFar = preLotRows.reduce((s,r)=> s + (r.installment*r.months), 0);
+            const prospective = baseSoFar + (inst*months);
+            if (prospective > preMax){
+                alert('Lot cap reached (Max ' + formatCurrency(preMax) + ').');
+                return;
+            }
+            preLotRows.push({ customerName: c.name, accountNumber: c.accountNumber||'', installment: inst, months, penalty, total });
+            renderPreLot();
+        }
+        function removePreRow(idx){ preLotRows.splice(idx,1); renderPreLot(); }
+        function renderPreLot(){
+            const tbody = document.getElementById('preLotBody');
+            if (!preLotRows.length){ tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:1rem; color:hsl(var(--muted-foreground));">Add customers to pre lot.</td></tr>'; }
+            else {
+                const term = (document.getElementById('preSearch')?.value||'').toLowerCase();
+                tbody.innerHTML = preLotRows.map((r,i)=>{
+                    const hay = `${r.customerName} ${r.accountNumber}`.toLowerCase();
+                    if (term && !hay.includes(term)) return '';
+                    return `
+                    <tr>
+                        <td>${r.customerName} (A/C: ${r.accountNumber})</td>
+                        <td>${formatCurrency(r.installment)}</td>
+                        <td>${r.months}</td>
+                        <td>${formatCurrency(r.penalty)}</td>
+                        <td>${formatCurrency(r.total)}</td>
+                        <td><button class="btn btn-outline btn-sm" onclick="removePreRow(${i})">Remove</button></td>
+                    </tr>
+                `}).join('');
+            }
+            const penaltySum = preLotRows.reduce((s,r)=> s + r.penalty, 0);
+            const baseSum = preLotRows.reduce((s,r)=> s + r.installment*r.months, 0);
+            document.getElementById('preLotTotal').textContent = 'Total: ' + formatCurrency(baseSum + penaltySum) + '  |  Base: ' + formatCurrency(baseSum) + '  |  Penalty: ' + formatCurrency(penaltySum);
+        }
+        function preExportCSV(){
+            if (!preLotRows.length){ showToast('Nothing to export','warning'); return; }
+            const headers = ['Customer','Installment','Months','Penalty','Total'];
+            const rows = preLotRows.map(r=>({Customer:r.customerName, Installment:r.installment, Months:r.months, Penalty:r.penalty, Total:r.total}));
+            const csv = toCSV(headers, rows);
+            const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'prelot.csv'; a.click();
+            URL.revokeObjectURL(url);
+            showToast('CSV exported', 'success');
+        }
+        function preViewLot(){
+            if (!preLotRows.length){ showToast('Nothing to view','warning'); return; }
+            const w = window.open('', '_blank');
+            const html = '<h3>PreLOT Preview</h3>' +
+                '<pre>' + preLotRows.map(r=> `${r.customerName} | ${formatCurrency(r.installment)} x ${r.months} + ${formatCurrency(r.penalty)} = ${formatCurrency(r.total)}`).join('\n') + '</pre>' +
+                `<div><strong>Total:</strong> ${document.getElementById('preLotTotal').textContent}</div>`;
+            w.document.write(html);
+            w.document.close();
+        }
+        function prePrintLot(){ preViewLot(); setTimeout(()=> window.print(), 300); }
+        function preExportAccounts(){
+            if (!preLotRows.length){ showToast('Nothing to export','warning'); return; }
+            const accounts = preLotRows.map(r=> r.accountNumber).filter(Boolean);
+            const unique = [...new Set(accounts)];
+            const text = unique.join(',');
+            const blob = new Blob([text], {type:'text/plain;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'prelot-account-numbers.txt'; a.click();
+            URL.revokeObjectURL(url);
+            showToast('Account numbers exported', 'success');
+        }
+        function preViewAccounts(){
+            if (!preLotRows.length){ showToast('Nothing to view','warning'); return; }
+            const accounts = preLotRows.map(r=> r.accountNumber).filter(Boolean);
+            const unique = [...new Set(accounts)];
+            const w = window.open('', '_blank');
+            const html = '<h3>Account Numbers</h3>' + '<pre>' + unique.join(',') + '</pre>';
+            w.document.write(html);
+            w.document.close();
+        }
+        function prePrintAccounts(){ preViewAccounts(); setTimeout(()=> window.print(), 300); }
+        document.addEventListener('DOMContentLoaded', function(){
+            seedPreCustomer(); renderPreLot();
+            preMax = (app.appSettings && app.appSettings.maxLotAmount) || 20000;
+            document.getElementById('preMaxLot').textContent = formatCurrency(preMax);
+            document.getElementById('preSearch')?.addEventListener('input', renderPreLot);
+        });
+    </script>
+</body>
+</html>
+
+
